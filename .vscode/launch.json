@@ -16,7 +16,7 @@
             "stopOnEntry": false,
             "sourceMaps": true,
             "sourceMapPathOverrides": {
-                "file:///createUser/*": "${workspaceRoot}/src/createUser/*"
+                "file:///users/*": "${workspaceRoot}/src/users/*"
             }
         }
     ]
