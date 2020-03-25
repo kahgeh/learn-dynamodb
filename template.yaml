@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  StageName:
+    Type: String
+    Default: dev
+  DomainName:
+    Type: String
+  CertificateArn:
+    Type: String
+  Version:
+    Type: String
+Description: >
+  dozie
+
+  Sample SAM Template for dozie
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 5
+
+Resources:
+  UsersFn:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      FunctionName: users
+      CodeUri: dist/users
+      Handler: index.handler
+      Runtime: nodejs12.x
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: Users
+      Environment:
+        Variables:
+          VERSION:
+            Ref: Version
+      Events:
+        GetUsersApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Path: /users
+            Method: GET
+        GetUserApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Path: /users/{userId}
+            Method: GET
+        PutUserApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Path: /users/{userId}
+            Method: PUT
+        DeleteUserApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Path: /users/{userId}
+            Method: DELETE
+  Api:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref StageName
+      AccessLogSettings:
+        DestinationArn: !GetAtt AccessLogs.Arn
+        Format: '{ "requestId":"$context.requestId", "ip": "$context.identity.sourceIp","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength" }'
+      Domain:
+        DomainName: !Ref DomainName
+        CertificateArn: !Ref CertificateArn
+        BasePath:
+          - /api/v1
+        Route53:
+          HostedZoneName: !Sub "${DomainName}."
+
+  AccessLogs:
+    Type: AWS::Logs::LogGroup
+
+  UserTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      TableName: Users
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+Outputs:
+  GetUserFunction:
+    Description: "Users CRUD Lambda Function ARN"
+    Value: !GetAtt UsersFn.Arn
+  GetUserFunctionIamRole:
+    Description: "Implicit IAM Role created for GetUser function"
+    Value: !GetAtt UsersFnRole.Arn

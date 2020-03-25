@@ -1,0 +1,5 @@
+dist
+node_modules
+.aws-sam
+samconfig.toml
+**/envvars.json
