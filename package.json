@@ -3,17 +3,41 @@
   "version": "1.0.0",
   "description": "docker run -p 8000:8000 amazon/dynamodb-local",
   "main": "index.js",
+  "jest": {
+    "transform": {
+      ".*\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "modulePaths": [
+      "src",
+      "node_modules"
+    ],
+    "testRegex": "src/.*test.(ts|js)$",
+    "testPathIgnorePatterns": [
+      ".*helper.*"
+    ],
+    "testEnvironment": "node"
+  },
   "scripts": {
     "installMainDeps": "npm ci",
     "validatetemplate": "sam validate --template ./template.yaml --profile 10kg-devtest",
     "buildUsers": "cd src/users && npm run build && cd ..",
     "buildsam": "sam build",
     "build": "npm run validatetemplate && npm run installMainDeps && npm run buildUsers && npx gulp && npm run buildsam",
-    "e2eDeploy": "npm run build && sam deploy"
+    "e2eDeploy": "npm run build && sam deploy",
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "gulp": "^4.0.2"
+    "@types/jest": "^25.2.1",
+    "gulp": "^4.0.2",
+    "jest": "^25.2.7",
+    "ts-jest": "^25.3.1",
+    "typescript": "^3.8.3"
   }
 }

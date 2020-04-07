@@ -5,11 +5,34 @@
   "main": "index.js",
   "author": "",
   "license": "ISC",
+  "jest": {
+    "transform": {
+      ".*\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "modulePaths": [
+      "src",
+      "node_modules"
+    ],
+    "testRegex": "src/.*test.(ts|js)$",
+    "testPathIgnorePatterns": [
+      ".*helper.*"
+    ],
+    "testEnvironment": "node"
+  },
   "scripts": {
-    "build": "npm ci && tsc --outDir ../../dist/users"
+    "build": "npm ci && tsc --outDir ../../dist/users",
+    "test": "jest"
   },
   "devDependencies": {
+    "@types/jest": "^25.2.1",
     "@types/node": "^13.9.1",
+    "jest": "^25.2.7",
+    "ts-jest": "^25.3.1",
     "typescript": "^3.8.3"
   },
   "dependencies": {
